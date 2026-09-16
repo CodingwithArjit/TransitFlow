@@ -20,8 +20,7 @@ import "leaflet/dist/leaflet.css";
 import "./styles.css";
 import socket from "./socket";
 
-const API = "http://localhost:5000";
-
+const API = "https://transitflow-backend-production.up.railway.app";
 const busIcon = new L.DivIcon({
   className: "",
   html: "🚌",
@@ -3047,27 +3046,36 @@ function Login() {
             Don't have an account?
           </p>
 
-          <Link
-  to="/register"
+          <div
   style={{
-    color: "#2563eb",
-    fontWeight: "700",
-    textDecoration: "none"
+    display: "flex",
+    justifyContent: "center",
+    gap: "20px",
+    marginTop: "10px"
   }}
 >
-  Create account
-</Link>
+  <Link
+    to="/register"
+    style={{
+      color: "#2563eb",
+      fontWeight: "700",
+      textDecoration: "none"
+    }}
+  >
+    Create account
+  </Link>
 
-          <Link
-            to="/"
-            style={{
-              color: "#2563eb",
-              fontWeight: "700",
-              textDecoration: "none"
-            }}
-          >
-            Explore TransitFlow
-          </Link>
+  <Link
+    to="/"
+    style={{
+      color: "#2563eb",
+      fontWeight: "700",
+      textDecoration: "none"
+    }}
+  >
+    Explore TransitFlow
+  </Link>
+</div>
         </div>
       </div>
     </div>
