@@ -93,9 +93,21 @@ function Navbar() {
             Logout
           </button>
         ) : (
-          <Link to="/login" className="btn btn-primary">
-            Login
-          </Link>
+          <Link
+  to="/login"
+  className="btn"
+  style={{
+    background: "transparent",
+    color: "#2563eb",
+    border: "1px solid #2563eb",
+    padding: "9px 14px",
+    borderRadius: "8px",
+    textDecoration: "none",
+    fontWeight: "600"
+  }}
+>
+  Login
+</Link>
         )}
       </div>
     </nav>
@@ -2866,216 +2878,111 @@ function StopDetails() {
 function Login() {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
+  const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
 
-  const handleLogin = async e => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-
-    setError("");
-    setLoading(true);
+    setMessage("");
 
     try {
-      const res = await fetch(
-        `${API}/api/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            email,
-            password
-          })
-        }
-      );
+      const res = await fetch(`${API}/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          login,
+          password
+        })
+      });
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(
-          data.message || "Login failed"
-        );
+        setMessage(data.message || "Login failed");
+        return;
       }
 
-      localStorage.setItem(
-        "token",
-        data.token
-      );
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-      if (data.user) {
-        localStorage.setItem(
-          "user",
-          JSON.stringify(data.user)
-        );
-      }
-
-      if (data.user?.role === "driver") {
-        navigate("/driver");
-      } else if (data.user?.role === "admin") {
+      if (data.user.role === "admin") {
         navigate("/admin");
+      } else if (data.user.role === "driver") {
+        navigate("/driver");
       } else {
-        navigate("/dashboard");
+        navigate("/passenger");
       }
     } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      setMessage("Server error. Please try again.");
     }
   };
 
   return (
-    <div className="auth">
+    <div className="auth-page">
       <div className="auth-card">
-        <div
-          style={{
-            textAlign: "center",
-            marginBottom: "30px"
-          }}
-        >
-          <div
-            style={{
-              width: "58px",
-              height: "58px",
-              margin: "0 auto 15px",
-              borderRadius: "18px",
-              background: "#eff6ff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "30px"
-            }}
-          >
-            🚌
-          </div>
-
-          <p
-            style={{
-              color: "#2563eb",
-              fontSize: "11px",
-              fontWeight: "800",
-              letterSpacing: "1px",
-              marginBottom: "7px"
-            }}
-          >
-            TRANSITFLOW
-          </p>
-
-          <h1>Welcome back</h1>
-
-          <p>
-            Sign in to access your TransitFlow account.
-          </p>
-        </div>
-
-        {error && (
-          <div
-            style={{
-              padding: "12px 14px",
-              marginBottom: "18px",
-              background: "#fef2f2",
-              color: "#dc2626",
-              borderRadius: "10px",
-              fontSize: "13px",
-              fontWeight: "600"
-            }}
-          >
-            {error}
-          </div>
-        )}
+        <h2>Welcome Back</h2>
+        <p>Login to your TransitFlow account</p>
 
         <form onSubmit={handleLogin}>
-          <label>Email</label>
-
           <input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={e =>
-              setEmail(e.target.value)
-            }
+            type="text"
+            placeholder="Email or Phone Number"
+            value={login}
+            onChange={(e) => setLogin(e.target.value)}
             required
           />
-
-          <label>Password</label>
 
           <input
             type="password"
-            placeholder="Enter your password"
+            placeholder="Password"
             value={password}
-            onChange={e =>
-              setPassword(e.target.value)
-            }
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
 
-          <button
-            type="submit"
-            className="btn btn-primary"
-            style={{
-              width: "100%",
-              marginTop: "10px",
-              border: "none",
-              cursor: "pointer"
-            }}
-            disabled={loading}
-          >
-            {loading
-              ? "Signing in..."
-              : "Sign In →"}
+          <button type="submit">
+            Login
           </button>
         </form>
 
+        {message && (
+          <p style={{ color: "red", marginTop: "10px" }}>
+            {message}
+          </p>
+        )}
+
         <div
           style={{
-            textAlign: "center",
-            marginTop: "25px",
-            paddingTop: "20px",
-            borderTop:
-              "1px solid #e2e8f0"
+            display: "flex",
+            justifyContent: "center",
+            gap: "20px",
+            marginTop: "10px"
           }}
         >
-          <p
+          <Link
+            to="/register"
             style={{
-              fontSize: "13px",
-              color: "#64748b"
+              color: "#2563eb",
+              fontWeight: "700",
+              textDecoration: "none"
             }}
           >
-            Don't have an account?
-          </p>
+            Create account
+          </Link>
 
-          <div
-  style={{
-    display: "flex",
-    justifyContent: "center",
-    gap: "20px",
-    marginTop: "10px"
-  }}
->
-  <Link
-    to="/register"
-    style={{
-      color: "#2563eb",
-      fontWeight: "700",
-      textDecoration: "none"
-    }}
-  >
-    Create account
-  </Link>
-
-  <Link
-    to="/"
-    style={{
-      color: "#2563eb",
-      fontWeight: "700",
-      textDecoration: "none"
-    }}
-  >
-    Explore TransitFlow
-  </Link>
-</div>
+          <Link
+            to="/"
+            style={{
+              color: "#2563eb",
+              fontWeight: "700",
+              textDecoration: "none"
+            }}
+          >
+            Explore TransitFlow
+          </Link>
         </div>
       </div>
     </div>
@@ -3087,167 +2994,122 @@ function Register() {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [message, setMessage] = useState("");
 
-  const handleRegister = async e => {
+  const handleRegister = async (e) => {
     e.preventDefault();
+    setMessage("");
 
-    setError("");
-    setLoading(true);
+    if (password !== confirmPassword) {
+      setMessage("Passwords do not match");
+      return;
+    }
 
     try {
-      const res = await fetch(
-        `${API}/api/auth/register`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            name,
-            email,
-            password
-          })
-        }
-      );
+      const res = await fetch(`${API}/api/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          phone,
+          password
+        })
+      });
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(
-          data.message || "Registration failed"
-        );
+        setMessage(data.message || "Registration failed");
+        return;
       }
 
-      navigate("/login");
+      setMessage("Registration successful. Redirecting...");
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 1200);
     } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      setMessage("Server error. Please try again.");
     }
   };
 
   return (
-    <div className="auth">
+    <div className="auth-page">
       <div className="auth-card">
-
-        <div
-          style={{
-            textAlign: "center",
-            marginBottom: "30px"
-          }}
-        >
-          <p
-            style={{
-              color: "#2563eb",
-              fontSize: "11px",
-              fontWeight: "800",
-              letterSpacing: "1px",
-              marginBottom: "7px"
-            }}
-          >
-            TRANSITFLOW
-          </p>
-
-          <h1>Create account</h1>
-
-          <p>
-            Create your passenger account.
-          </p>
-        </div>
-
-        {error && (
-          <div
-            style={{
-              padding: "12px 14px",
-              marginBottom: "18px",
-              background: "#fef2f2",
-              color: "#dc2626",
-              borderRadius: "10px",
-              fontSize: "13px",
-              fontWeight: "600"
-            }}
-          >
-            {error}
-          </div>
-        )}
+        <h2>Create Account</h2>
+        <p>Join TransitFlow today</p>
 
         <form onSubmit={handleRegister}>
-
-          <label>Name</label>
-
           <input
             type="text"
-            placeholder="Enter your name"
+            placeholder="Full Name"
             value={name}
-            onChange={e =>
-              setName(e.target.value)
-            }
+            onChange={(e) => setName(e.target.value)}
             required
           />
-
-          <label>Email</label>
 
           <input
             type="email"
-            placeholder="Enter your email"
+            placeholder="Email Address"
             value={email}
-            onChange={e =>
-              setEmail(e.target.value)
-            }
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
 
-          <label>Password</label>
+          <input
+            type="tel"
+            placeholder="Phone Number"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
+          />
 
           <input
             type="password"
-            placeholder="Create a password"
+            placeholder="Password"
             value={password}
-            onChange={e =>
-              setPassword(e.target.value)
-            }
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
 
-          <button
-            type="submit"
-            className="btn btn-primary"
-            style={{
-              width: "100%",
-              marginTop: "10px",
-              border: "none",
-              cursor: "pointer"
-            }}
-            disabled={loading}
-          >
-            {loading
-              ? "Creating account..."
-              : "Create Account →"}
-          </button>
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
 
+          <button type="submit">
+            Create Account
+          </button>
         </form>
+
+        {message && (
+          <p
+            style={{
+              color: message.includes("successful") ? "green" : "red",
+              marginTop: "10px"
+            }}
+          >
+            {message}
+          </p>
+        )}
 
         <div
           style={{
-            textAlign: "center",
-            marginTop: "25px",
-            paddingTop: "20px",
-            borderTop:
-              "1px solid #e2e8f0"
+            display: "flex",
+            justifyContent: "center",
+            gap: "20px",
+            marginTop: "10px"
           }}
         >
-          <p
-            style={{
-              fontSize: "13px",
-              color: "#64748b"
-            }}
-          >
-            Already have an account?
-          </p>
-
           <Link
             to="/login"
             style={{
@@ -3256,10 +3118,20 @@ function Register() {
               textDecoration: "none"
             }}
           >
-            Sign in
+            Already have an account?
+          </Link>
+
+          <Link
+            to="/"
+            style={{
+              color: "#2563eb",
+              fontWeight: "700",
+              textDecoration: "none"
+            }}
+          >
+            Explore TransitFlow
           </Link>
         </div>
-
       </div>
     </div>
   );
