@@ -313,7 +313,7 @@ Contributions, suggestions, and bug reports are welcome.
 B.Tech Computer Science & Engineering
 
 -   GitHub:
-    [@YOUR_GITHUB_USERNAME](https://github.com/YOUR_GITHUB_USERNAME)
+    [@CodingwithArjit](https://github.com/CodingwithArjit)
 -   Portfolio: [Developer
     Portfolio](https://new-animation-portfolio.vercel.app/)
 
